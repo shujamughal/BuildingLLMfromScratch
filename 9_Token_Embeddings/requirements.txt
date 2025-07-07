@@ -1,0 +1,13 @@
+# Core Libraries
+torch>=2.0
+numpy>=1.22,<1.27
+scipy==1.10.1
+tiktoken>=0.5.1
+
+# Word Embeddings & NLP
+gensim==4.3.2
+
+# Jupyter Notebook (optional but useful for teaching)
+notebook
+ipykernel
+matplotlib
