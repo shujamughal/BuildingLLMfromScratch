@@ -113,3 +113,43 @@ sa_v1 = SelfAttention_v1(d_in, d_out)
 # Forward pass
 context_vectors = sa_v1(inputs)
 print(context_vectors)
+
+import torch
+import torch.nn as nn
+
+class SelfAttention_v2(nn.Module):
+    def __init__(self, d_in, d_out, qkv_bias=False):
+        super().__init__()
+        self.W_query = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_key = nn.Linear(d_in, d_out, bias=qkv_bias)
+        self.W_value = nn.Linear(d_in, d_out, bias=qkv_bias)
+
+    def forward(self, x):
+        keys = self.W_key(x)
+        queries = self.W_query(x)
+        values = self.W_value(x)
+
+        attn_scores = queries @ keys.T  # [seq_len, seq_len]
+        attn_weights = torch.softmax(attn_scores / keys.shape[-1]**0.5, dim=-1)
+        context_vecs = attn_weights @ values  # [seq_len, d_out]
+        return context_vecs
+
+torch.manual_seed(789)
+
+inputs = torch.tensor([
+    [0.43, 0.15, 0.89],  # Your
+    [0.55, 0.87, 0.66],  # Journey
+    [0.57, 0.85, 0.64],  # Starts
+    [0.22, 0.58, 0.33],  # With
+    [0.77, 0.25, 0.10],  # One
+    [0.05, 0.80, 0.55]   # Step
+])
+
+d_in = inputs.shape[-1]  # 3
+d_out = 2                # Output dim for Q, K, V
+
+sa_v2 = SelfAttention_v2(d_in, d_out)
+context_output = sa_v2(inputs)
+
+print(context_output)
+
